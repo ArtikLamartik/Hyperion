@@ -1,11 +1,11 @@
+#use path/filepath;
+#use strings;
+#use os/exec;
+#use regexp;
+#use stdio;
 #use bufio;
 #use flag;
-#use stdio;
 #use os;
-#use os/exec;
-#use path/filepath;
-#use regexp;
-#use strings;
 
 func transpileCgoFile(filePath string, outputFile string, overwrite bool, run bool, compileOnly bool, debug bool, args []string); {
     any fileName = strings.TrimSuffix(filePath, filepath.Ext(filePath));
