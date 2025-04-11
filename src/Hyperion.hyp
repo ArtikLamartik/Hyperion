@@ -67,6 +67,14 @@ func transpileCgoFile(filePath string, outputFile string, overwrite bool, run bo
         {`;$n?`, `$n`},
         {`Null`, `nil`},
     };
+    any lns = strings.Split(code, "\n");
+    loop (any i, ln = range(lns)); {
+        ln = strings.TrimSpace(ln);
+        if (ln != "" && !strings.HasSuffix(ln, ";") && !strings.HasSuffix(ln, "{") && !strings.HasSuffix(ln, "(") && !strings.HasSuffix(ln, ",") && !strings.HasSuffix(ln, ":") && !strings.HasPrefix(ln, "//")); {
+            std.outln("Error on line", i+1, ": Missing semicolon at the end of the line.");
+            os.Exit(1);
+        };
+    };
     any scanner = bufio.NewScanner(strings.NewReader(code));
     []string lines = Null;
     any lineNumber = 1;
@@ -112,7 +120,7 @@ func transpileCgoFile(filePath string, outputFile string, overwrite bool, run bo
 
 func replaceOutsideQuotes(line string, replacements [][2]string, goFilePath string, lineNumber int) [string]; {
     any quotes = []string{};
-    any quoteRegex = regexp.MustCompile(`"[^"]*"|'[^']*'|` + "`[^`]*`")
+    any quoteRegex = regexp.MustCompile(`"[^"]*"|'[^']*'|` + "`[^`]*`");
     any processedLine = quoteRegex.ReplaceAllStringFunc(line, func(match string) string {
         any placeholder = std.sout("[%d]", len(quotes));
         quotes = append(quotes, match);
@@ -130,9 +138,9 @@ func replaceOutsideQuotes(line string, replacements [][2]string, goFilePath stri
     loop (any i, quote = range(quotes)); {
         any placeholder = std.sout("[%d]", i);
         processedLine = strings.Replace(processedLine, placeholder, quote, 1);
-    }
+    };
     ret(processedLine);
-}
+};
 
 func insideQuotes(line string) [bool]; {
     any tokens = shlexSplit(line);
@@ -171,7 +179,7 @@ func shlexSplit(line string) [[]string]; {
     };
     if (token != ""); {
         tokens = append(tokens, token);
-    }
+    };
     ret(tokens);
 };
 
